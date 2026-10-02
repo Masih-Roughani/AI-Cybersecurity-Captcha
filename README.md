@@ -6,6 +6,14 @@
 
 I built this project to recognize objects inside image-based CAPTCHA tiles using YOLO11. The notebook covers the complete workflow: preparing the dataset, training the model, checking the results, and testing it on a local HTML page.
 
+## Demo
+
+<video controls width="100%">
+  <source src="https://github.com/Masih-Roughani/captcha/raw/refs/heads/main/Video_compressed.mp4" type="video/mp4">
+</video>
+
+[Open or download the demo video](Video_compressed.mp4)
+
 ## What the project does
 
 - Converts the image folders into a YOLO-formatted dataset.
