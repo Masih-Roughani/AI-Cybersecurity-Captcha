@@ -2,28 +2,24 @@
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
-![Ultralytics](https://img.shields.io/badge/Ultralytics-YOLO-111111?style=for-the-badge)
+![YOLO11](https://img.shields.io/badge/YOLO11-Ultralytics-111111?style=for-the-badge)
 
-This repository contains an experimental computer-vision workflow for recognizing objects in image-based CAPTCHA challenges. The project uses Ultralytics YOLO11 for model training, evaluation, and local HTML-based inference experiments.
+I built this project to recognize objects inside image-based CAPTCHA tiles using YOLO11. The notebook covers the complete workflow: preparing the dataset, training the model, checking the results, and testing it on a local HTML page.
 
-> This project is intended for research, education, and testing against CAPTCHA pages that you own or are explicitly authorized to evaluate. Do not use it to bypass protections on third-party services.
+## What the project does
 
-## Overview
+- Converts the image folders into a YOLO-formatted dataset.
+- Checks the number of images available for each class.
+- Balances the training data by oversampling smaller classes.
+- Fine-tunes a YOLO11s model.
+- Evaluates the model on test images and generates a classification report and confusion matrix.
+- Tests the trained model on a local HTML CAPTCHA page by reading the target class and selecting the matching tiles.
 
-The notebook prepares an image-classification-style dataset for YOLO object detection by assigning one full-image bounding box to each sample. It then:
+## Classes
 
-1. Builds a YOLO-compatible train/test dataset.
-2. Checks class distribution and previews sample images.
-3. Oversamples under-represented classes in the training split only.
-4. Fine-tunes a YOLO11s model.
-5. Evaluates predictions on the test split with accuracy, a classification report, and a confusion matrix.
-6. Runs an optional local HTML experiment that captures CAPTCHA tiles, predicts their classes, and clicks matching tiles through Chrome DevTools Protocol.
+The model currently recognizes these nine classes:
 
-## Supported classes
-
-The current notebook defines the following nine classes:
-
-| Class ID | Class |
+| ID | Class |
 | ---: | --- |
 | 0 | Bicycle |
 | 1 | Bridge |
@@ -35,19 +31,17 @@ The current notebook defines the following nine classes:
 | 7 | Stair |
 | 8 | Traffic Light |
 
-## Repository contents
+## Files
 
-| File | Description |
-| --- | --- |
-| [`sample.ipynb`](sample.ipynb) | Main notebook containing dataset preparation, training, evaluation, and local HTML inference code. |
-| [`sample.html`](sample.html) | Static HTML export of the notebook, including saved outputs and visualizations. |
-| [`best.pt`](best.pt) | Trained YOLO weights produced by the project. |
-| [`yolo11s.pt`](yolo11s.pt) | YOLO11s base/pretrained weights used as the training starting point. |
-| [`Video_compressed.mp4`](Video_compressed.mp4) | Compressed project video/demo asset. |
+- `sample.ipynb` — notebook used for dataset preparation, training, evaluation, and testing.
+- `sample.html` — exported HTML version of the notebook with its saved outputs.
+- `best.pt` — trained model weights.
+- `yolo11s.pt` — YOLO11s weights used as the starting model.
+- `Video_compressed.mp4` — project video/demo.
 
-## Important project-layout note
+## Project structure
 
-The notebook was exported from a larger local project and expects the following paths when it is executed:
+The notebook expects the dataset and the local test page to be available in the following structure:
 
 ```text
 project-root/
@@ -57,33 +51,28 @@ project-root/
 └── website.html
 ```
 
-The `data/` directory and the original `website.html` are not part of this repository snapshot. The included `sample.html` is the exported notebook report, not a drop-in replacement for `website.html`. To reproduce training or the local HTML experiment, restore the corresponding dataset and page, then update the paths in the first notebook cell if needed.
+The dataset and the original `website.html` are not included in this repository. The `sample.html` file is only the exported notebook report. If you want to run the notebook from the beginning, place the required files in the paths above or change the paths in the first cell.
 
-## Training configuration
+## Training settings
 
-The notebook uses the following main settings:
-
-- Base model: `yolo11s.pt`
+- Model: `yolo11s.pt`
 - Image size: `512`
 - Epochs: `120`
 - Optimizer: `AdamW`
 - Seed: `42`
-- Batch size: `16` with CUDA, otherwise `2`
-- Device: CUDA when available, otherwise CPU
-- Training-only class balancing through oversampling
-- No mosaic, mixup, or copy-paste augmentation
+- Batch size: `16` with CUDA and `2` on CPU
+- Training device: CUDA when available, otherwise CPU
+- Oversampling is applied only to the training split
 
-The dataset builder creates a full-image YOLO label for each sample. This is appropriate for the notebook's single-object-per-tile setup; it should be changed if the dataset contains multiple independently localized objects.
+Each image is treated as one object and receives a full-image bounding box. This matches the CAPTCHA tile format used in the project.
 
 ## Installation
-
-Create a virtual environment and install the notebook dependencies:
 
 ```bash
 python -m venv .venv
 ```
 
-Activate it on Windows:
+On Windows, activate the environment with:
 
 ```powershell
 .venv\Scripts\Activate.ps1
@@ -95,25 +84,15 @@ Install the required packages:
 pip install ultralytics torch torchvision numpy pandas pillow matplotlib scikit-learn pyyaml requests websocket-client jupyter
 ```
 
-For GPU training, install the PyTorch build that matches your CUDA installation before installing or upgrading the remaining packages.
+## Run the notebook
 
-## Running the notebook
+```bash
+jupyter notebook sample.ipynb
+```
 
-1. Restore the expected `data/train`, `data/test`, and `website.html` paths.
-2. Open the notebook:
+Run the cells in order. The notebook creates its generated datasets, training runs, and reports inside the `_generated/` directory.
 
-   ```bash
-   jupyter notebook sample.ipynb
-   ```
-
-3. Run the cells in order.
-4. Review the generated dataset summaries, training outputs, test report, and confusion matrix.
-
-Generated datasets, runs, and reports are written under `_generated/` by the notebook. That directory is intentionally not included in this snapshot because it contains reproducible training artifacts and can become very large.
-
-## Using the trained weights
-
-After installing `ultralytics`, a single image can be evaluated with:
+## Use the trained model
 
 ```python
 from ultralytics import YOLO
@@ -126,17 +105,5 @@ for result in results:
     print(result.boxes)
 ```
 
-The notebook's local HTML solver uses stricter decision logic than the example above. It compares the predicted class with the displayed target, checks a confidence threshold and confidence margin, and only then selects a tile.
-
-## Reproducibility and limitations
-
-- Results depend on the original dataset, class balance, hardware, and installed package versions.
-- The repository does not include the source dataset, so a fresh checkout cannot retrain the model without restoring that data.
-- `best.pt`, `yolo11s.pt`, and `Video_compressed.mp4` are tracked with Git LFS because they are binary artifacts.
-- The HTML automation code is designed for a local test page and may require changes for another page structure or browser environment.
-- No production accuracy, latency, or security guarantee is provided.
-
-## License
-
-No separate license file is included in this snapshot. Add a license before redistributing the code, trained weights, dataset, or media under terms that clearly define permitted use.
+The HTML test uses a confidence threshold and a confidence-margin check before selecting a tile.
 
