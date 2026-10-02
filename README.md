@@ -1,18 +1,10 @@
-# CAPTCHA Object Detection with YOLO11
+# AI in Cybersecurity — CAPTCHA Object Detection
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
 ![YOLO11](https://img.shields.io/badge/YOLO11-Ultralytics-111111?style=for-the-badge)
 
-I built this project to recognize objects inside image-based CAPTCHA tiles using YOLO11. The notebook covers the complete workflow: preparing the dataset, training the model, checking the results, and testing it on a local HTML page.
-
-## Demo
-
-<video controls width="100%">
-  <source src="https://github.com/Masih-Roughani/captcha/raw/refs/heads/main/Video_compressed.mp4" type="video/mp4">
-</video>
-
-[Open or download the demo video](Video_compressed.mp4)
+I built this project for the Applications of Artificial Intelligence in Cybersecurity course. It uses YOLO11 to recognize objects inside image-based CAPTCHA tiles. The notebook covers the complete workflow: preparing the dataset, training the model, checking the results, and testing it on a local HTML page.
 
 ## What the project does
 
@@ -45,7 +37,6 @@ The model currently recognizes these nine classes:
 - `sample.html` — exported HTML version of the notebook with its saved outputs.
 - `best.pt` — trained model weights.
 - `yolo11s.pt` — YOLO11s weights used as the starting model.
-- `Video_compressed.mp4` — project video/demo.
 
 ## Project structure
 
